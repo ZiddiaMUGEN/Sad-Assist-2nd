@@ -56,6 +56,7 @@ movetime = 0
 [State -2, Force Custom State Root]
 type = DisplayToClipboard
 triggerall = !IsHelper
+triggerall = RoundState < 3 ;; this is important to avoid accidentally deleting root on round change
 triggerall = NumPartner
 trigger1 = !partner,NumHelper(11223344)
 text = "!lua Functions/CaptureRoot.lua"

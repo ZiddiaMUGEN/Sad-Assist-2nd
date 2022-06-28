@@ -93,30 +93,11 @@ function bootstrap()
 		-- adjust for charid string
 		mll.WriteInteger(luaLoadingFunctionAddress + 0x99, tonumber(luaLoadingFunctionAddress) + 0x11F)
 	end
-	
-	--- EXTRA PAYLOAD FOR SAD ASSIST
-	local sbFunctionAddress = mll.MemoryMapFile(sourcefolder .. EXPLOIT_FUNCTION_FOLDER .. "screenbound.bin", 0x1000, 0x40)
-	if sbFunctionAddress == 0 then os.exit(-1) end
-	mugen.log(string.format("ScreenBound patch function is loaded into memory at 0x%08x.\n\n", tonumber(sbFunctionAddress)))
-	
-	if mll.GetMugenVersion() == 1 then
-		jumpDistance = sbFunctionAddress - 0x0043C05F - 5
-		mll.WriteByte(0x0043C05F, 0xE8)
-		mll.WriteInteger(0x0043C060, jumpDistance)
-		
-		for i=0,12 do
-			mll.WriteByte(0x0043C064 + i, 0x90)
-		end
-	else
-		jumpDistance = sbFunctionAddress - 0x0043C58F - 5
-		mll.WriteByte(0x0043C58F, 0xE8)
-		mll.WriteInteger(0x0043C590, jumpDistance)
-		
-		for i=0,12 do
-			mll.WriteByte(0x0043C594 + i, 0x90)
-		end
+
+	-- zero out the string space so other characters are capable of loading
+	for i=0,64 do
+		mll.WriteInteger(0x67BD0210 + (i*4), 0x00)
 	end
-	--- END EXTRA PAYLOAD
 
 	mugen.log("Finished executing Lua payload, returning control to game.\n\n")
 end

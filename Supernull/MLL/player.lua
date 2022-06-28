@@ -137,11 +137,6 @@ end
 	-- utility on object
 	function player:getplayeraddress() return self.address end
 	function player:getinfoaddress() return mll.ReadInteger(self.address) end
-	function player:screentolocal(t) 
-		local x = t.x or 0
-		local y = t.y or 0
-		return {x = (x * self:localcoord().x) / mugen.screenwidth(), y = (y * self:localcoord().y) / mugen.screenheight()}
-	end
 
 	function player:anim(animno)
 		local manager = animmanager:new(self)
@@ -203,6 +198,19 @@ end
 		if ownerIndex == -1 then return self end
 		if not player.indexisvalid(ownerIndex) then return self end
 		return player.getplayer(ownerIndex)
+	end
+	-- returns the `n`th enemy as a player (or `nil` if there is no enemy)
+	-- if `n` is ommitted returns the first enemy
+	function player:enemy(n)
+		local idx = n or 0
+		local c = -1
+		for p in player.player_iter() do
+			if p:teamside() ~= self:teamside() and not p:ishelper() then
+				c = c + 1
+			end
+			if c == idx then return p end
+		end
+		return nil
 	end
 
 	-- state controllers and pseudo-state controllers
@@ -404,6 +412,10 @@ end
 	function player:helperid() return mll.ReadInteger(self:getplayeraddress() + 0x1644) end
 	function player:parentid() return mll.ReadInteger(self:getplayeraddress() + 0x1648) end
 	function player:helpertype() return mll.ReadInteger(self:getplayeraddress() + 0x1654) end
+	function player:stateno() return mll.ReadInteger(self:getplayeraddress() + 0xCCC) end
+	function player:prevstateno() return mll.ReadInteger(self:getplayeraddress() + 0xCD0) end
+	function player:facing() return mll.ReadInteger(self:getplayeraddress() + 0x1E8) end
+	function player:movecontact() return mll.ReadInteger(self:getplayeraddress() + 0xF0C) end
 	function player:animcount() 
 		local manager = animmanager:new(self)
 		return manager:count()
@@ -416,13 +428,20 @@ end
 	function player:idset(value) mll.WriteInteger(self:getplayeraddress() + 0x04, value) end
 	function player:teamsideset(value) mll.WriteInteger(self:getplayeraddress() + 0x0C, value) end
 	function player:ishelperset(value) mll.WriteInteger(self:getplayeraddress() + 0x1C, value) end
+	function player:juggleset(value) mll.WriteInteger(self:getplayeraddress() + 0x64, value) end
 	function player:isfrozenset(value) mll.WriteInteger(self:getplayeraddress() + 0x1B4, value) end
 	function player:lifemaxset(value) 
-		if value == 0 then mugen.log("Refusing to set LifeMax to 0 - this will crash your game.\n") end
+		if value == 0 then 
+			mugen.log("Refusing to set LifeMax to 0 - this will crash your game.\n") 
+			return
+		end
 		mll.WriteInteger(self:getplayeraddress() + 0x1BC, value) 
 	end
 	function player:powermaxset(value) 
-		if value == 0 then mugen.log("Refusing to set PowerMax to 0 - this will crash your game?\n") end
+		if value == 0 then 
+			mugen.log("Refusing to set PowerMax to 0 - this will crash your game?\n") 
+			return
+		end
 		mll.WriteInteger(self:getplayeraddress() + 0x1DC, value) 
 	end
 	function player:statenoset(value) mll.WriteInteger(self:getplayeraddress() + 0xCCC, value) end
