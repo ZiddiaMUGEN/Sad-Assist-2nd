@@ -4,6 +4,7 @@ function userscript()
 
 	-- no partner? don't run this
 	if current == nil then return end
+	if partner == nil then return end
 	
 	-- map ourselves to match the partner
 	current:lifemaxset(partner:lifemax())

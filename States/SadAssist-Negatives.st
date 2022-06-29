@@ -8,6 +8,22 @@ text = "!lua Functions/EveryFrame.lua"
 ignorehitpause = 1
 persistent = 256
 
+[State -2]
+type = LifeSet
+trigger1 = !NumPartner
+trigger1 = RoundState >= 2
+value = 0
+ignorehitpause = 1
+persistent = 256
+
+[State -2]
+type = SelfState
+trigger1 = !NumPartner
+trigger1 = RoundState >= 2
+value = 5150
+ignorehitpause = 1
+persistent = 256
+
 [State -2, Invisible]
 type = AssertSpecial
 trigger1 = 1
