@@ -52,7 +52,7 @@ function userscript()
 		partner:velset({x = x})
 	end
 	
-	partner:posset({x = partner:vel().x + partner:pos().x, y = partner:vel().y + partner:pos().y})
+	partner:posset({x = (partner:vel().x * partner:facing()) + partner:pos().x, y = partner:vel().y + partner:pos().y})
 	
 	if mugen.random(1000) > 950 then partner:velmul({x = 2, y = 0.25}) end
 	if mugen.random(1000) < 50 then partner:velmul({x = 0.25, y = 2}) end
